@@ -1,0 +1,24 @@
+{
+  "name": "persistent",
+  "version": "1.0.0",
+  "description": "Hell Yeah!",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.14.0",
+    "mongoose": "^4.5.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pago99/neues-projekt.git"
+  },
+  "author": "maggo pago",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pago99/neues-projekt/issues"
+  },
+  "homepage": "https://github.com/pago99/neues-projekt#readme"
+}
