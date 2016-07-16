@@ -10,10 +10,15 @@ var HOST = process.env.HOST || 'localhost';
 
 var app = express();
 
-app.get('/', function(req, res) {
-    res.sendfile('view/start.html', {root: __dirname })
-});
+// "static"-Ordner definieren, sodass in den view-Dateien (.html) kein absoluter
+// Pfad angegeben werden muss: '... href="css/base.min.css" ...'
+app.use('/js', express.static('js'));
+app.use('/css', express.static('css'));
+app.use('/view', express.static('view'));
 
+// das URL-Routing in ein router-module ausgelagert
+var router = require('./router.js');
+app.use('/', router);
 
 app.listen(PORT, null, null, function() {
   console.log('Host: %s - Server listening on port %d in %s mode', 'localhost', this.address().port, app.settings.env);
