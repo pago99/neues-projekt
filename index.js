@@ -10,8 +10,12 @@ var HOST = process.env.HOST || 'localhost';
 
 var app = express();
 
+app.use('/css', express.static('css'));
+app.use('/js', express.static('js'));
+app.use('/assets', express.static('assets'));
+
 app.get('/', function(req, res) {
-    res.sendfile('view/start.html', {root: __dirname })
+    res.sendFile('view/start.html', {root: __dirname })
 });
 
 
