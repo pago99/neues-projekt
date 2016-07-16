@@ -8,6 +8,13 @@ var db = require('./db/connect.js');
 var PORT = process.env.PORT || 3000;
 var HOST = process.env.HOST || 'localhost';
 
-server.listen(PORT, null, null, function() {
+var app = express();
+
+app.get('/', function(req, res) {
+    res.sendfile('view/start.html', {root: __dirname })
+});
+
+
+app.listen(PORT, null, null, function() {
   console.log('Host: %s - Server listening on port %d in %s mode', 'localhost', this.address().port, app.settings.env);
 });
