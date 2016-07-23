@@ -1,3 +1,19 @@
+/* Effects & Animation */
+
+/*
+document.querySelector(".dot").addEventListener('click', click);
+
+function click() {
+  var e = document.querySelector(".rankuser");
+  if(e.style.display == 'block') {
+    e.style.display = 'none';
+  }else{
+    e.style.display = 'block';
+  };
+};
+*/
+
+
 /* Timer! */
 
 var millisec = 0;

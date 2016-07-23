@@ -24,6 +24,10 @@ li{list-style:none}
    My CSS
    ========================================================================== */
 
+/* Variables */
+
+$fontcolor: #fff;
+
 /* ---- base ---- */
 
 html,body{
@@ -70,31 +74,120 @@ canvas{
   top: 0; left: 0; bottom: 0; right: 0;
   border-bottom-right-radius: 50px;
   border-bottom-left-radius: 50px;
+
+	#time {
+	  text-align: center;
+	  font-size: 120px;
+	  padding: 5% 20px 20px 20px;
+	  color: #ddd;
+	}
+
+	button {
+	  bottom: 0px;
+	  position: absolute;
+	  text-align: center;
+	  font-size: 42px;
+	  padding: 20px;
+	  width: 100%;
+	  height: 100px;
+	  border: 3px solid #ddd;
+	  border-radius: 50px;
+	  background: rgba(0,0,0,0);
+	  color: $fontcolor;
+	  margin: 0 auto;
+	  transition: all 0.2s;
+	}
+	button:hover {
+	  background-color: #ddd;
+	  color: #000;
+	}
 }
 
-#time {
-  text-align: center;
-  font-size: 120px;
-  padding: 5% 20px 20px 20px;
-  color: #ddd;
+#current {
+	color: $fontcolor;
+	background: rgba(0,0,0,0.6);
+	font-size: 18px;
+	padding: 20px;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+
+	div {
+		display: inline;
+	}
+
+	p {
+		font-weight: bold;
+	}
+
+	.usericon {
+		position: relative;
+	}
+
+	.currentinfo {
+		position: relative;
+		display: inline-block;
+		margin-left: 10px;
+		vertical-align: bottom;
+	}
 }
 
-button {
-  bottom: 0px;
-  position: absolute;
-  text-align: center;
-  font-size: 42px;
-  padding: 20px;
-  width: 100%;
-  height: 100px;
-  border: 3px solid #ddd;
-  border-radius: 50px;
-  background: rgba(0,0,0,0);
-  color: #fff;
-  margin: 0 auto;
-  transition: all 0.2s;
-}
-button:hover {
-  background-color: #ddd;
-  color: #000;
+#highscore {
+	position: absolute;
+	height: 100%;
+	right: 0px;
+	top: 0px;
+	border-right: solid 5px #fff;
+	color: $fontcolor;
+
+	.user {
+		position: absolute;
+		right: 0px;
+		top: 200px;
+		cursor: pointer;
+
+		&:hover .dot{
+			margin-top: 0px;
+			width: 25px;
+			height: 25px;
+		}
+
+		&:hover .rankuser{
+			width: auto;
+			opacity: 1;
+			padding: 8px 8px;
+		}
+
+		.dot {
+			margin-top: 5px;
+			margin-right: 10px;
+			background: #fff;
+			border-radius: 50%;
+			height: 15px;
+			width: 15px;
+			border: 0;
+			transition: all 0.2s;
+		}
+
+		hr {
+			position: absolute;
+			top: 0px;
+			right: 0px;
+			border: 1px solid #fff;
+			width: 90%;
+		}
+
+		.rankuser {
+			position: absolute;
+			font-size: 16px;
+			top: -5px;
+			right: 40px;
+			padding: 0;
+			background: rgba(0,0,0,0.6);
+			overflow: hidden;
+			width: 0px;
+			opacity: 0;
+			transition: opacity 0.2s 0.1s;
+		}
+	}
 }
