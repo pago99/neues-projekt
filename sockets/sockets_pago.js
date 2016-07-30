@@ -19,7 +19,9 @@ module.exports = function(io) {
         });
 
         socket.on('sendtime', function (data) {
-            user.save(time: 'data');
+            //user.save({time: 'data'});
+            console.log(data);
         });
 
+    });
 }

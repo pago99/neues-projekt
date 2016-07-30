@@ -23,7 +23,7 @@ socket.on('stopit', function () {
     var mytime = $("#time").text();
     console.log("Yeah your time is:" + mytime);
     if ( run == 1) {
-        socket.emit('sendtime', { time: 'mytime' });
+        socket.emit('sendtime', { time: mytime });
         run = 0;
     };
 });

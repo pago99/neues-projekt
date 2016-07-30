@@ -15,7 +15,7 @@ var io      = require('socket.io').listen(server) // socket.io wird mit Port ver
 var session = require('express-session');
 
 // Eigene Module
-var sockets = require('./sockets/sockets.js')(io);
+var sockets = require('./sockets/sockets_pago.js')(io);
 var db      = require('./db/connect.js');
 var router  = require('./router.js');
 
