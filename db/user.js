@@ -9,6 +9,7 @@ var UserSchema = new Schema({
     username       : String,
     email          : String,
     password       : String,
+    time           : String,
     registered_at  : { type: Date, default: Date.now() }
 });
 
