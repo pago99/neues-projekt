@@ -52,3 +52,16 @@ function startstoptimer() {
      display();
   }
 }
+
+/* ---- Buttons etc ---- */
+
+$(document).ready(function() {
+    $(".registerlink").click(function(){
+        $(".login").css("left", "500px");
+        $(".register").css("right", "0px");
+    });
+    $(".loginlink").click(function(){
+        $(".register").css("right", "500px");
+        $(".login").css("left", "0px");
+    });
+});
