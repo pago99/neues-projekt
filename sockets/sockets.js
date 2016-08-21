@@ -10,7 +10,6 @@ module.exports = function(io) {
 
             // User darf nur angelegt werden, wenn es ihn noch nicht gibt
             User.findOne({username:data.username}, function(err, user){
-                console.log(err, user);
                 if(!err && !user){
                     var userSave = new User(
                     {
@@ -19,7 +18,6 @@ module.exports = function(io) {
                       time: '0',
                       registered_at: new Date()
                     });
-                    console.log(userSave);
 
                     userSave.save( function(err) {
                         if(!err){
@@ -36,23 +34,19 @@ module.exports = function(io) {
         });
 
         // Kann erst ausgelöst werden, wenn eingeloggt
-        socket.on('stoptime', function (data) {
-            console.log(data);
-            //socket.broadcast.to(data.room).emit('stopit', {});
-            socket.broadcast.emit('stopit', {});
-            //io.sockets.emit('stopit');
-            //socket.broadcast.to('loggedin').emit('stopit');
-            console.log('Stop!');
+        socket.on('stoptime', function (userData) {
+            socket.broadcast.emit('stopit', {username: userData.username, time: userData.time});
         });
 
-        socket.on('sendtime', function (data) {
+        socket.on('sendtime', function (userData) {
             //user.save({time: 'data'});
-            console.log(data);
+            // Hier die Daten speichern vom User, dessen Zeit gerade
+            // gestoppt wurde, weil ein anderer FIRE! geklickt hat
+            //console.log(userData);
+            User.where('username', userData.username).update({$set: {time: userData.time}}, function(err, count){});
         });
 
     });
-
-
 
     require('socketio-auth')(io, {
         authenticate: authenticate,
@@ -76,6 +70,7 @@ module.exports = function(io) {
                 console.log('user found, check password...');
                 if( user.password == password ){
                   console.log('Password correct');
+                  socket.emit('whoami', {username:user.username, time: user.time});
                   return callback(null, user.password == password);
                 } else {
                   return callback(new Error("Wrong password"));
@@ -94,7 +89,5 @@ module.exports = function(io) {
                 console.log(err);
             }
         });
-
     }
-
 }

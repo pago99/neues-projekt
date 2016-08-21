@@ -6,7 +6,7 @@ var socket = io.connect('http://192.168.0.15:3000');
 socket.on('connect', function(){
 
     // HEAR SERVER-EVENTS
-    socket.on('authenticated', function(user) {
+    socket.on('authenticated', function(response) {
         // use the socket as usual
         console.log('authenticated...');
         authenticated = true;
@@ -18,23 +18,31 @@ socket.on('connect', function(){
         if ( run == 0) {
             $("#starttimer").on('click touch', function(){
                 starttimer();
-                socket.emit('stoptime', {});
+                socket.emit('stoptime', {username:username, time:time});
                 console.log("Yeah, I started, and stopped all the other B****");
                 run = 1;
             });
         };
 
-
-
     });
 
-    socket.on('stopit', function (data) {
-        console.log(data);
+    socket.on('whoami', function(userData){
+        console.log('You are: ' + userData.username + ' and your time is: ' + userData.time);
+        username = userData.username;
+        time = userData.time;
+    });
+
+    socket.on('stopit', function (userData) {
+        // userData = Daten vom User, der gerade King of the hill ist!
         stoptimer();
+        $('#current').find('span').text(userData.username);
+        $('#current').find('#othertime').text(userData.time);
         var mytime = $("#time").text();
         console.log("Yeah your time is:" + mytime);
         if ( run == 1) {
-            socket.emit('sendtime', { time: mytime });
+            // username = Benutzername des Users, dessen Zeit gerade gestoppt wurde
+            // und deshalb gespeichert werden muss
+            socket.emit('sendtime', { username:username, time: mytime });
             run = 0;
         };
     });
