@@ -5,7 +5,7 @@ socket.on('news', function (data) {
     socket.emit('my other event', { my: 'data' });
 });*/
 var run = 0;
-
+var authenticated;
 
 var socket = io.connect('http://localhost:3000');
 socket.on('connect', function(){
@@ -14,9 +14,10 @@ socket.on('connect', function(){
     socket.on('authenticated', function() {
         // use the socket as usual
         console.log('authenticated...');
+        authenticated = true;
 
         if ( run == 0) {
-            $("#starttimer").click(function(){
+            $("#starttimer").on('click touch', function(){
                 starttimer();
                 socket.emit('stoptime', {});
                 console.log("Yeah, I started, and stopped all the other B****");
@@ -39,12 +40,18 @@ socket.on('connect', function(){
     // EVENTS by USER
     // login button clicked:
     $('#login').on('click touch', function(){
-        socket.emit('authentication', {username: "Maggo", password: "secret"});
+        if(!authenticated){
+            socket.emit('authentication', {username: "Maggo", password: "secret"});
+        } else {
+            console.log('Bist schon eingeloggt');
+        }
     });
 
     // register button clicked:
     $('#register').on('click touch', function(){
-        socket.emit('register', {username: "Maggo", password: "secret"});
+        if(!authenticated){
+            socket.emit('register', {username: "Maggo", password: "secret"});
+        }
     });
 
 });
