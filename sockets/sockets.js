@@ -4,7 +4,7 @@ module.exports = function(io) {
 
     // nicht eingeloggt:
     io.sockets.on('connection', function(socket){
-        console.log(io.sockets);
+
         socket.on('register', function(data){
             console.log('register try');
 
@@ -38,8 +38,8 @@ module.exports = function(io) {
         // Kann erst ausgelöst werden, wenn eingeloggt
         socket.on('stoptime', function (data) {
             console.log(data);
-            socket.broadcast.to(data.room).emit('stopit', {});
-            // socket.broadcast.emit('stopit', {});
+            //socket.broadcast.to(data.room).emit('stopit', {});
+            socket.broadcast.emit('stopit', {});
             //io.sockets.emit('stopit');
             //socket.broadcast.to('loggedin').emit('stopit');
             console.log('Stop!');
@@ -74,26 +74,25 @@ module.exports = function(io) {
               return callback(new Error("User not found"));
             } else {
                 console.log('user found, check password...');
-              // funzt nicht
-              // return callback(null, user.password == password);
-              if( user.password == password ){
-                  console.log('Password correct: Authenticated socket', socket.id);
-                  socket.join('General');
-                  socket.emit('authenticated');
-              } else {
+                if( user.password == password ){
+                  console.log('Password correct');
+                  return callback(null, user.password == password);
+                } else {
                   return callback(new Error("Wrong password"));
-              }
+                }
             }
         });
     }
     function postAuthenticate(socket, data){
         var username = data.username;
 
-        User.find('User', {username:username}, function(err, user) {
-            console.log('POST TEST');
-            User.find('User', {username:username}, function(err, user) {
+        User.findOne({username:username}, function(err, user) {
+            console.log(err, user);
+            if(!err){
                 socket.client.user = user;
-            });
+            } else {
+                console.log(err);
+            }
         });
 
     }

@@ -2,7 +2,7 @@ var run = 0;
 var authenticated;
 var username;
 
-var socket = io.connect('http://localhost:3000');
+var socket = io.connect('http://192.168.0.15:3000');
 socket.on('connect', function(){
 
     // HEAR SERVER-EVENTS
@@ -18,7 +18,7 @@ socket.on('connect', function(){
         if ( run == 0) {
             $("#starttimer").on('click touch', function(){
                 starttimer();
-                socket.emit('stoptime', {room:'General'});
+                socket.emit('stoptime', {});
                 console.log("Yeah, I started, and stopped all the other B****");
                 run = 1;
             });
