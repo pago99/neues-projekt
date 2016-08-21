@@ -1,40 +1,42 @@
-// Als Vorlage, so wäre es ohne authenticate
-/*var socket = io('http://localhost:3000');
-socket.on('news', function (data) {
-    console.log(data);
-    socket.emit('my other event', { my: 'data' });
-});*/
 var run = 0;
 var authenticated;
+var username;
 
 var socket = io.connect('http://localhost:3000');
 socket.on('connect', function(){
 
     // HEAR SERVER-EVENTS
-    socket.on('authenticated', function() {
+    socket.on('authenticated', function(user) {
         // use the socket as usual
         console.log('authenticated...');
         authenticated = true;
 
+        // Overlay entfernen... und evtl zukünftig noch paar Dinge, deshalb als
+        // helper function
+        authClean();
+
         if ( run == 0) {
             $("#starttimer").on('click touch', function(){
                 starttimer();
-                socket.emit('stoptime', {});
+                socket.emit('stoptime', {room:'General'});
                 console.log("Yeah, I started, and stopped all the other B****");
                 run = 1;
             });
         };
 
-        socket.on('stopit', function () {
-            stoptimer();
-            var mytime = $("#time").text();
-            console.log("Yeah your time is:" + mytime);
-            if ( run == 1) {
-                socket.emit('sendtime', { time: mytime });
-                run = 0;
-            };
-        });
 
+
+    });
+
+    socket.on('stopit', function (data) {
+        console.log(data);
+        stoptimer();
+        var mytime = $("#time").text();
+        console.log("Yeah your time is:" + mytime);
+        if ( run == 1) {
+            socket.emit('sendtime', { time: mytime });
+            run = 0;
+        };
     });
 
     // EVENTS by USER
@@ -70,4 +72,20 @@ socket.on('connect', function(){
         }
     });
 
+    // error events:
+    // Wird ausgespuckt wenn es einen Fehler beim Loginprozess gab
+    socket.on('unauthorized', function(err){
+        console.log("There was an error with the authentication:", err.message);
+    });
+
+    // andere Fehler abfangen:
+    socket.on('error', function(err){
+        console.log("There was an error ", err);
+    });
+
 });
+
+// Helper funcs
+function authClean(){
+    $('#overlay').remove();
+}

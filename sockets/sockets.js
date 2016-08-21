@@ -2,59 +2,52 @@ module.exports = function(io) {
     var db   = require('../db/connect.js');
     var User = require('../db/user.js');
 
-    // Der ganze Socket.io Stuff:
-    // Als Vorlage, so wäre es OHNE "authenticate"
-    /*io.on('connection', function (socket) {
-
-        // Nur Testkram
-        // Beim Entfernen: auch Code im Frontend löschen
-        socket.emit('news', { hello: 'world' });
-        socket.on('my other event', function (data) {
-            console.log(data);
-        });
-
-    });*/
-
     // nicht eingeloggt:
-    io.on('connection', function(socket){
-        console.log('Nicht eingeloggt');
-
+    io.sockets.on('connection', function(socket){
+        console.log(io.sockets);
         socket.on('register', function(data){
             console.log('register try');
-            var userSave = new User(
-            {
-              username: data.username,
-              password: data.password,
-              time: '0',
-              registered_at: new Date()
-            });
-            console.log(userSave);
 
-            userSave.save( function(err) {
-                if(!err){
-                    console.log('User angelegt');
+            // User darf nur angelegt werden, wenn es ihn noch nicht gibt
+            User.findOne({username:data.username}, function(err, user){
+                console.log(err, user);
+                if(!err && !user){
+                    var userSave = new User(
+                    {
+                      username: data.username,
+                      password: data.password,
+                      time: '0',
+                      registered_at: new Date()
+                    });
+                    console.log(userSave);
+
+                    userSave.save( function(err) {
+                        if(!err){
+                            console.log('User angelegt');
+                        } else {
+                            console.log('Fehler: Registrierung');
+                        }
+                    });
                 } else {
-                    console.log('Fehler: Registrierung');
+                    console.log('user already exists');
                 }
             });
+
         });
 
-        // Darf erst ausgelöst werden, wenn eingeloggt!
+        // Kann erst ausgelöst werden, wenn eingeloggt
         socket.on('stoptime', function (data) {
-            socket.broadcast.emit('stopit', {});
+            console.log(data);
+            socket.broadcast.to(data.room).emit('stopit', {});
+            // socket.broadcast.emit('stopit', {});
+            //io.sockets.emit('stopit');
+            //socket.broadcast.to('loggedin').emit('stopit');
+            console.log('Stop!');
         });
 
         socket.on('sendtime', function (data) {
             //user.save({time: 'data'});
             console.log(data);
-        });
-
-        socket.on('unauthorized', function(err){
-            console.log("There was an error with the authentication:", err.message);
-        });
-
-        socket.on('error', function(err){
-            console.log("There was an error ", err);
         });
 
     });
@@ -63,7 +56,7 @@ module.exports = function(io) {
 
     require('socketio-auth')(io, {
         authenticate: authenticate,
-        postAuthenticate: postAuth,
+        postAuthenticate: postAuthenticate,
         timeout: 'none'
     });
     function authenticate(socket, data, callback) {
@@ -71,8 +64,6 @@ module.exports = function(io) {
         //get credentials sent by the client
         var username = data.username;
         var password = data.password;
-
-        console.log(username, password);
 
         User.findOne({username:username}, function(err, user) {
             console.log('try to find user...');
@@ -82,11 +73,12 @@ module.exports = function(io) {
             if (err || !user) {
               return callback(new Error("User not found"));
             } else {
-                console.log(user.password);
+                console.log('user found, check password...');
               // funzt nicht
               // return callback(null, user.password == password);
               if( user.password == password ){
-                  console.log('Authenticated socket', socket.id);
+                  console.log('Password correct: Authenticated socket', socket.id);
+                  socket.join('General');
                   socket.emit('authenticated');
               } else {
                   return callback(new Error("Wrong password"));
@@ -94,12 +86,15 @@ module.exports = function(io) {
             }
         });
     }
-    var postAuth = function(socket, data){
+    function postAuthenticate(socket, data){
         var username = data.username;
-        console.log('POST TEST');
-        /*User.find('User', {username:username}, function(err, user) {
-            socket.client.user = user;
-        });*/
+
+        User.find('User', {username:username}, function(err, user) {
+            console.log('POST TEST');
+            User.find('User', {username:username}, function(err, user) {
+                socket.client.user = user;
+            });
+        });
 
     }
 
