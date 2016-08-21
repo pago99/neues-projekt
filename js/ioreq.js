@@ -54,4 +54,11 @@ socket.on('connect', function(){
         }
     });
 
+    // fire button clicked:
+    $('#starttimer').on('click touch', function(){
+        if(!authenticated){
+            $("#overlay").css("display", "block").animate({opacity: '1'}, "fast");
+        }
+    });
+
 });

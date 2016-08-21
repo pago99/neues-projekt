@@ -56,12 +56,21 @@ function startstoptimer() {
 /* ---- Buttons etc ---- */
 
 $(document).ready(function() {
-    $(".registerlink").click(function(){
-        $(".login").css("left", "500px");
-        $(".register").css("right", "0px");
+    $(".registerlink").on('click touch', function(){
+        $(".login").animate({left: '500px', opacity: '0'}, "fast");
+        $(".register").animate({right: '0px', opacity: '1'}, "fast");
     });
-    $(".loginlink").click(function(){
-        $(".register").css("right", "500px");
-        $(".login").css("left", "0px");
+    $(".loginlink").on('click touch', function(){
+        $(".register").animate({right: '500px', opacity: '0'}, "fast");
+        $(".login").animate({left: '0px', opacity: '1'}, "fast");
+    });
+    $(".exit").on('click touch', function(){
+        $("#overlay").css("display", "none");
+    });
+    $(".registerlink").on('click touch', function(){
+        $(".exit").animate({left: '430px'}, "fast");
+    });
+    $(".loginlink").on('click touch', function(){
+        $(".exit").animate({left: '30px'}, "fast");
     });
 });
