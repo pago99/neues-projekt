@@ -24,7 +24,6 @@ module.exports = function(io) {
             var userSave = new User(
             {
               username: data.username,
-              email: 'maggo@persistant.com',
               password: data.password,
               time: '0',
               registered_at: new Date()
@@ -50,13 +49,21 @@ module.exports = function(io) {
             console.log(data);
         });
 
+        socket.on('unauthorized', function(err){
+            console.log("There was an error with the authentication:", err.message);
+        });
+
+        socket.on('error', function(err){
+            console.log("There was an error ", err);
+        });
+
     });
 
 
 
     require('socketio-auth')(io, {
         authenticate: authenticate,
-        postAuthenticate: postAuthenticate,
+        postAuthenticate: postAuth,
         timeout: 'none'
     });
     function authenticate(socket, data, callback) {
@@ -79,6 +86,7 @@ module.exports = function(io) {
               // funzt nicht
               // return callback(null, user.password == password);
               if( user.password == password ){
+                  console.log('Authenticated socket', socket.id);
                   socket.emit('authenticated');
               } else {
                   return callback(new Error("Wrong password"));
@@ -86,13 +94,12 @@ module.exports = function(io) {
             }
         });
     }
-
-    function postAuthenticate(socket, data){
+    var postAuth = function(socket, data){
         var username = data.username;
-
-        User.find('User', {username:username}, function(err, user) {
+        console.log('POST TEST');
+        /*User.find('User', {username:username}, function(err, user) {
             socket.client.user = user;
-        });
+        });*/
 
     }
 

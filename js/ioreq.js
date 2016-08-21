@@ -39,18 +39,27 @@ socket.on('connect', function(){
 
     // EVENTS by USER
     // login button clicked:
-    $('#login').on('click touch', function(){
+    $('.login').on('submit', function(e){
+        e.preventDefault();
         if(!authenticated){
-            socket.emit('authentication', {username: "Maggo", password: "secret"});
+            var reqUsername = $(this).find('input[name="logname"]').val();
+            var reqPassword = $(this).find('input[name="logpass"]').val();
+            console.log(reqUsername, reqPassword);
+            socket.emit('authentication', {username: reqUsername, password: reqPassword});
         } else {
             console.log('Bist schon eingeloggt');
         }
     });
 
     // register button clicked:
-    $('#register').on('click touch', function(){
+    $('.register').on('submit', function(e){
+        e.preventDefault();
         if(!authenticated){
-            socket.emit('register', {username: "Maggo", password: "secret"});
+            var reqUsername = $(this).find('input[name="regname"]').val();
+            var reqPassword = $(this).find('input[name="regpass"]').val();
+            socket.emit('register', {username: reqUsername, password: reqPassword});
+        } else {
+            console.log('Du bist bereits eingeloggt... Warum also registrieren?');
         }
     });
 
