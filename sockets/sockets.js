@@ -39,6 +39,18 @@ module.exports = function(io) {
                 }
             });
         });
+
+        // Darf erst ausgelöst werden, wenn eingeloggt!
+        socket.on('stoptime', function (data) {
+            socket.broadcast.emit('stopit', {});
+        });
+
+        socket.on('sendtime', function (data) {
+            //user.save({time: 'data'});
+            console.log(data);
+        });
+
+
     });
 
 

@@ -4,6 +4,8 @@ socket.on('news', function (data) {
     console.log(data);
     socket.emit('my other event', { my: 'data' });
 });*/
+var run = 0;
+
 
 var socket = io.connect('http://localhost:3000');
 socket.on('connect', function(){
@@ -12,6 +14,26 @@ socket.on('connect', function(){
     socket.on('authenticated', function() {
         // use the socket as usual
         console.log('authenticated...');
+
+        if ( run == 0) {
+            $("#starttimer").click(function(){
+                starttimer();
+                socket.emit('stoptime', {});
+                console.log("Yeah, I started, and stopped all the other B****");
+                run = 1;
+            });
+        };
+
+        socket.on('stopit', function () {
+            stoptimer();
+            var mytime = $("#time").text();
+            console.log("Yeah your time is:" + mytime);
+            if ( run == 1) {
+                socket.emit('sendtime', { time: mytime });
+                run = 0;
+            };
+        });
+
     });
 
     // EVENTS by USER
