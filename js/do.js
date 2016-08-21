@@ -39,6 +39,7 @@ function starttimer() {
   }
   display();
 }
+
 function stoptimer() {
   clearTimeout(timer);
   timer = 0;
@@ -51,18 +52,16 @@ function startstoptimer() {
   } else {
      display();
   }
-}
+};
 
 /* ---- Buttons etc ---- */
 
 $(document).ready(function() {
     $(".registerlink").on('click touch', function(){
-        $(".login").animate({left: '500px', opacity: '0'}, "fast");
-        $(".register").animate({right: '0px', opacity: '1'}, "fast");
+        $(".foermchen").animate({right: '-=500px'}, "fast");
     });
     $(".loginlink").on('click touch', function(){
-        $(".register").animate({right: '500px', opacity: '0'}, "fast");
-        $(".login").animate({left: '0px', opacity: '1'}, "fast");
+        $(".foermchen").animate({right: '+=500px'}, "fast");
     });
     $(".exit").on('click touch', function(){
         $("#overlay").css("display", "none");
