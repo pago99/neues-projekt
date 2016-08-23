@@ -13,9 +13,6 @@ var server  = app.listen(PORT, null, null, function() {
 // Weitere externe Module
 var io      = require('socket.io').listen(server) // socket.io wird mit Port verknüpft!!!
 
-// Brauchen wir die noch?
-var session = require('express-session');
-
 // Eigene Module
 var sockets = require('./sockets/sockets.js')(io);
 var db      = require('./db/connect.js');
