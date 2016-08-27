@@ -5,6 +5,8 @@ var username;
 var socket = io.connect('http://localhost:3000');
 socket.on('connect', function(){
 
+    // CLIENTSEITIG :)
+
     // HEAR SERVER-EVENTS
     socket.on('authenticated', function(response) {
         // use the socket as usual
@@ -20,71 +22,85 @@ socket.on('connect', function(){
                 starttimer();
                 socket.emit('stoptime', {username:username, time:time});
                 console.log("Yeah, I started, and stopped all the other B****");
+                // die Anzeige des Users, der gerade King of the Hill geworden ist
+                // aktualisieren
+                currentUser(username, '(You)');
                 run = 1;
             });
         };
-
     });
 
-    socket.on('whoami', function(userData){
+    // Server sagt uns wer wir als User sind, sobald sichergestellt ist, dass
+    // wir "authenticated" sind (Ergebnis des Logins)
+    socket.on('whoami', function(userData) {
         console.log('You are: ' + userData.username + ' and your time is: ' + userData.time);
         username = userData.username;
         time = userData.time;
+
+        // dem User anzeigen (bevor er auf "FIRE!" geklickt hat), wie seine Zeit gerade ist
+        $('#time').text(time);
+
+        // den Timer anhand der gespeicherten Zeit fortlaufen lassen, wofür die
+        // gespeicherte Zeit formatiert werden muss (der Timer arbeitet mit int)
+        var savedTime = formatSavedTime(time);
+        seconds = savedTime[0]; // seconds kommt aus der do.js -> Timer
+        millisec = savedTime[1]; // millisec kommt aus der do.js -> Timer
     });
 
+    // Server sagt "stoppen", wenn es einen neuen King gibt
     socket.on('stopit', function (userData) {
         // userData = Daten vom User, der gerade King of the hill ist!
+        // vorigen King vom Thron stoßen, also dessen Timer stoppen
         stoptimer();
-        $('#current').find('span').text(userData.username);
-        $('#current').find('#othertime').text(userData.time);
+
+        // neuen King anzeigen (in jedem CLIENT!!!)
+        currentUser(userData.username, userData.time);
+
+        // Zeit vom verbundenen User, der u.U. der vorige King of the Hill war
         var mytime = $("#time").text();
         console.log("Yeah your time is:" + mytime);
+
+        // Die Zeit des entthronten Kings speichern!
         if ( run == 1) {
             // username = Benutzername des Users, dessen Zeit gerade gestoppt wurde
             // und deshalb gespeichert werden muss
-            socket.emit('sendtime', { username:username, time: mytime });
+            socket.emit('sendtime', {username:username, time: mytime});
             run = 0;
         };
     });
 
+    socket.on('king', function(kingData){
+        
+    });
+
     // EVENTS by USER
-    // login button clicked:
-    $('.login').on('submit', function(e){
-        e.preventDefault();
-        if(!authenticated){
+    // Events sollen nur angesteuert werden, wenn man nicht authenticated ist:
+    if(!authenticated){
+        // login button clicked:
+        // event wird nur getriggered, wenn man NICHT eingeloggt ist
+        $('.login').on('submit', function(e){
+            e.preventDefault();
             var reqUsername = $(this).find('input[name="logname"]').val();
             var reqPassword = $(this).find('input[name="logpass"]').val();
             console.log(reqUsername, reqPassword);
             socket.emit('authentication', {username: reqUsername, password: reqPassword});
-        } else {
-            console.log('Bist schon eingeloggt');
-        }
-    });
+        });
 
-    // register button clicked:
-    $('.register').on('submit', function(e){
-        e.preventDefault();
-        if(!authenticated){
+        // register button clicked:
+        // event wird nur getriggered, wenn man NICHT eingeloggt ist
+        $('.register').on('submit', function(e){
+            e.preventDefault();
             var reqUsername = $(this).find('input[name="regname"]').val();
             var reqPassword = $(this).find('input[name="regpass"]').val();
             socket.emit('register', {username: reqUsername, password: reqPassword});
-        } else {
-            console.log('Du bist bereits eingeloggt... Warum also registrieren?');
-        }
-    });
+        });
 
-    // in eine Funktion packen, damit DRY
-    // fire button clicked:
-    $('#starttimer').on('click touch', function(){
-        if(!authenticated){
+        // fire button clicked:
+        // event wird nur getriggered, wenn man NICHT eingeloggt ist
+        $('#starttimer').on('click touch', function(){
             $("#overlay").css("display", "block").animate({opacity: '1'}, "fast");
-        } else {
-            console.log('TEST');
-            // Hier landet die Routine, wenn der User sich authentifiziert hat
-            // und die Zeit startet und somit King of the Hill ist
-            // Evtl. ein Event rausballern, vllt auch als broadcast?
-        }
-    });
+        });
+    }
 
     // error events:
     // Wird ausgespuckt wenn es einen Fehler beim Loginprozess gab
@@ -100,6 +116,17 @@ socket.on('connect', function(){
 });
 
 // Helper funcs
+// Remove Overlay from DOM
 function authClean(){
     $('#overlay').remove();
+}
+// Alter display for current user info
+function currentUser(username, time){
+    $('.currentinfo span').text(username);
+    $('#othertime').text(time);
+}
+// returns the saved Time: first return value: seconds, then milliseconds
+function formatSavedTime(time){
+    var secAndMillisec = time.split('.');
+    return [parseInt(secAndMillisec[0]), parseInt(secAndMillisec[1])];
 }

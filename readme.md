@@ -8,8 +8,9 @@
 - [x] King of the Hill-Prinzip (vom Thron stoßen)
 
 # Was fehlt und muss rein?
-- [ ] Anzeigen wer King of the Hill ist (global)
+- [ ] Anzeigen wer "King of the Hill" ist (global)
 - [ ] Rangliste mit Dots
+- [ ] Timer für wiederkehrende Benutzer muss beim letzten Speicherpunkt starten
 
 # Was wäre noch schön?
 - [ ] Session + keep me logged in  
