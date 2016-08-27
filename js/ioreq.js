@@ -19,7 +19,7 @@ socket.on('connect', function(){
 
         if ( run == 0) {
             $("#starttimer").on('click touch', function(){
-                starttimer();
+                starttimer('time');
                 socket.emit('stoptime', {username:username, time:time});
                 console.log("Yeah, I started, and stopped all the other B****");
                 // die Anzeige des Users, der gerade King of the Hill geworden ist
@@ -54,7 +54,7 @@ socket.on('connect', function(){
             times.push(user.user[i].time);
         };
 
-        var newtimes = times.sort(function(a, b){return a-b}).reverse();
+        var newtimes = times.sort(function(a, b){return b-a});
         console.log(newtimes);
 
         for (var i = 0; i < user.user.length; i++) {
@@ -71,6 +71,11 @@ socket.on('connect', function(){
 
         // neuen King anzeigen (in jedem CLIENT!!!)
         currentUser(userData.username, userData.time);
+        // timer des neuen Kings laufen lassen
+        var savedTime = formatSavedTime(userData.time);
+        seconds = savedTime[0];
+        millisec = savedTime[1];
+        starttimer('othertime');
 
         // Zeit vom verbundenen User, der u.U. der vorige King of the Hill war
         var mytime = $("#time").text();
@@ -83,10 +88,6 @@ socket.on('connect', function(){
             socket.emit('sendtime', {username:username, time: mytime});
             run = 0;
         };
-    });
-
-    socket.on('king', function(kingData){
-
     });
 
     // EVENTS by USER
