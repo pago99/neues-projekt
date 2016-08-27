@@ -1,6 +1,6 @@
 var run = 0;
 var authenticated;
-var username;
+var username, myTime;
 
 var socket = io.connect('http://localhost:3000');
 socket.on('connect', function(){
@@ -10,7 +10,7 @@ socket.on('connect', function(){
     // HEAR SERVER-EVENTS
     socket.on('authenticated', function(response) {
         // use the socket as usual
-        console.log('authenticated...');
+        console.info('auth successful');
         authenticated = true;
 
         // Overlay entfernen... und evtl zukünftig noch paar Dinge, deshalb als
@@ -19,15 +19,19 @@ socket.on('connect', function(){
 
         if ( run == 0) {
             $("#starttimer").on('click touch', function(){
+                stoptimer();
+                var savedTime = formatSavedTime(myTime);
+                seconds = savedTime[0];
+                millisec = savedTime[1];
                 starttimer('time');
-                socket.emit('stoptime', {username:username, time:time});
-                console.log("Yeah, I started, and stopped all the other B****");
+                socket.emit('stoptime', {username:username, time:myTime});
+                console.log("Yeah, you're the new king of time.");
                 // die Anzeige des Users, der gerade King of the Hill geworden ist
                 // aktualisieren
                 currentUser(username, '(You)');
                 run = 1;
             });
-        };
+        }
     });
 
     // Server sagt uns wer wir als User sind, sobald sichergestellt ist, dass
@@ -35,14 +39,14 @@ socket.on('connect', function(){
     socket.on('whoami', function(userData) {
         console.log('You are: ' + userData.username + ' and your time is: ' + userData.time);
         username = userData.username;
-        time = userData.time;
+        myTime = userData.time;
 
         // dem User anzeigen (bevor er auf "FIRE!" geklickt hat), wie seine Zeit gerade ist
-        $('#time').text(time);
+        $('#time').text(myTime);
 
         // den Timer anhand der gespeicherten Zeit fortlaufen lassen, wofür die
         // gespeicherte Zeit formatiert werden muss (der Timer arbeitet mit int)
-        var savedTime = formatSavedTime(time);
+        var savedTime = formatSavedTime(myTime);
         seconds = savedTime[0]; // seconds kommt aus der do.js -> Timer
         millisec = savedTime[1]; // millisec kommt aus der do.js -> Timer
     });
@@ -55,8 +59,10 @@ socket.on('connect', function(){
         };
 
         var newtimes = times.sort(function(a, b){return b-a});
-        console.log(newtimes);
 
+        // da highscore nun auch aktualisiert wird, muss es vor jedem ausgelösten
+        // Schleifendurchlauf geleert werden
+        $('#highscore').html('');
         for (var i = 0; i < user.user.length; i++) {
             var bottom = ((user.user[i].time*100)/newtimes[0])-3.5;
             $('#highscore').append('<div class="user" style="bottom:'+bottom+'%;"><div class="rankuser">'+user.user[i].username+': '+user.user[i].time+'s</div><div class="dot"></div><hr/></div>');
@@ -71,6 +77,7 @@ socket.on('connect', function(){
 
         // neuen King anzeigen (in jedem CLIENT!!!)
         currentUser(userData.username, userData.time);
+
         // timer des neuen Kings laufen lassen
         var savedTime = formatSavedTime(userData.time);
         seconds = savedTime[0];
@@ -78,16 +85,17 @@ socket.on('connect', function(){
         starttimer('othertime');
 
         // Zeit vom verbundenen User, der u.U. der vorige King of the Hill war
-        var mytime = $("#time").text();
-        console.log("Yeah your time is:" + mytime);
+        myTime = $("#time").text();
+        console.log("Your time was stopped: " + myTime);
 
         // Die Zeit des entthronten Kings speichern!
         if ( run == 1) {
             // username = Benutzername des Users, dessen Zeit gerade gestoppt wurde
             // und deshalb gespeichert werden muss
-            socket.emit('sendtime', {username:username, time: mytime});
+            console.log('Save! ' + username + ': ' + myTime );
+            socket.emit('sendtime', {username:username, time: myTime});
             run = 0;
-        };
+        }
     });
 
     // EVENTS by USER
@@ -99,7 +107,6 @@ socket.on('connect', function(){
             e.preventDefault();
             var reqUsername = $(this).find('input[name="logname"]').val();
             var reqPassword = $(this).find('input[name="logpass"]').val();
-            console.log(reqUsername, reqPassword);
             socket.emit('authentication', {username: reqUsername, password: reqPassword});
         });
 
@@ -143,7 +150,7 @@ function currentUser(username, time){
     $('#othertime').text(time);
 }
 // returns the saved Time: first return value: seconds, then milliseconds
-function formatSavedTime(time){
-    var secAndMillisec = time.split('.');
+function formatSavedTime(timeToFormat){
+    var secAndMillisec = timeToFormat.split('.');
     return [parseInt(secAndMillisec[0]), parseInt(secAndMillisec[1])];
 }

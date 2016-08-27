@@ -47,24 +47,39 @@ module.exports = function(io) {
             // An alle verbundenen Sockets (= quasi alle verbundenen Besucher/Benutzer) schicken
             // --> zu den Clients, als Wert wird der NEUE "King of the Hill" mitgegeben
             socket.broadcast.emit('stopit', {username: userData.username, time: userData.time});
+            setRankings(User, socket, true);
         });
 
         socket.on('sendtime', function (userData) {
             // Hier die Daten speichern vom User, dessen Zeit gerade
             // gestoppt wurde, weil ein anderer FIRE! geklickt hat
-            console.log(userData);
+            console.log('Gespeichert: ' + userData.username + ': ' + userData.time);
             User.where('username', userData.username).update({$set: {time: userData.time}}, function(err, count){});
+            setRankings(User, socket, true);
         });
 
-        User.find({}, 'username time', function(err, user){
+        // bei Login Ranglistendaten holen!
+        setRankings(User, socket, false);
+
+    });
+
+    // helper funcs
+    // Ranglistendaten an Client oder Clients (dann type angeben) schicken
+    // type = false -> kein broadcast, bei true -> broadcast
+    function setRankings(UserModel, socket, type){
+        UserModel.find({}, 'username time', function(err, user){
             if(!err) {
-                socket.emit('highscore', {user});
+                if(type){
+                    io.sockets.emit('highscore', {user});
+                } else {
+                    socket.emit('highscore', {user});
+                }
             } else {
                 throw err;
             }
         });
+    }
 
-    });
 
     // Auth-Configuration
     // authenticate wird aufgerufen, wenn user sich einloggen will (ausgelöst im client)
@@ -83,7 +98,7 @@ module.exports = function(io) {
         User.findOne({username:username}, function(err, user) {
             console.info('try to find user...');
             //inform the callback of auth success/failure
-            console.log(err, user);
+            // console.log(err, user);
 
             if (err || !user) {
                 return callback(new Error("User not found"));
@@ -113,7 +128,7 @@ module.exports = function(io) {
         var username = data.username;
 
         User.findOne({username:username}, function(err, user) {
-            console.log(err, user);
+            //console.log(err, user);
             if(!err){
                 socket.client.user = user;
             } else {
