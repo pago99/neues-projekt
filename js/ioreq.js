@@ -2,7 +2,7 @@ var run = 0;
 var authenticated;
 var username;
 
-var socket = io.connect('http://192.168.0.15:3000');
+var socket = io.connect('localhost:3000');
 socket.on('connect', function(){
 
     // HEAR SERVER-EVENTS
