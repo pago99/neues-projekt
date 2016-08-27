@@ -56,6 +56,14 @@ module.exports = function(io) {
             User.where('username', userData.username).update({$set: {time: userData.time}}, function(err, count){});
         });
 
+        User.find({}, 'username time', function(err, user){
+            if(!err) {
+                socket.emit('highscore', {user});
+            } else {
+                throw err;
+            }
+        });
+
     });
 
     // Auth-Configuration
