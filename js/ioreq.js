@@ -32,6 +32,22 @@ socket.on('connect', function(){
         time = userData.time;
     });
 
+    socket.on('highscore', function(user) {
+        var times = new Array;
+
+        for (var i = 0; i < user.user.length; i++) {
+            times.push(user.user[i].time);
+        };
+
+        var newtimes = times.sort(function(a, b){return a-b}).reverse();
+        console.log(newtimes);
+
+        for (var i = 0; i < user.user.length; i++) {
+            var bottom = ((user.user[i].time*100)/newtimes[0])-3.5;
+            $('#highscore').append('<div class="user" style="bottom:'+bottom+'%;"><div class="rankuser">'+user.user[i].username+': '+user.user[i].time+'s</div><div class="dot"></div><hr/></div>');
+        };
+    });
+
     socket.on('stopit', function (userData) {
         // userData = Daten vom User, der gerade King of the hill ist!
         stoptimer();

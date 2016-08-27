@@ -15,20 +15,6 @@ router.get('/', function(req, res) {
     res.sendFile('view/index.html', {root: __dirname });
 });
 
-router.get('/formTest', function(req, res) {
-    res.sendFile('view/formTest.html', {root: __dirname });
-});
-
-// ".post" ist das Pendant zu ".get"
-// Problem ist nur, dass man ohne body-parser nicht an die über POST
-// verschickten Daten rankommt
-router.post('/formTest', function(req, res){
-    // req.body enthält die per POST-Formular verschickten Daten
-    console.log(req.body);
-    // nur eine Testausgabe
-    res.send("recieved your request!");
-});
-
 // am Ende wird der router exportiert,
 // da er ja in der index.js eingebunden wird
 module.exports = router;

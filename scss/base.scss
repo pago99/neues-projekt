@@ -143,16 +143,16 @@ canvas{
 	.user {
 		position: absolute;
 		right: 0px;
-		top: 200px;
 		cursor: pointer;
 
-		&:hover .dot{
-			margin-top: 0px;
-			width: 25px;
-			height: 25px;
+		&:hover {
+			margin-top: -5px;
 		}
-
-		&:hover .rankuser{
+		&:hover .dot{
+			border-radius: 0%;
+		}
+		&:hover .rankuser {
+			min-width: 150px;
 			width: auto;
 			opacity: 1;
 			padding: 8px 8px;
@@ -171,10 +171,11 @@ canvas{
 
 		hr {
 			position: absolute;
-			top: 0px;
+			top: -1px;
 			right: 0px;
 			border: 1px solid #fff;
 			width: 90%;
+			transition: all 0.2s;
 		}
 
 		.rankuser {
@@ -187,7 +188,7 @@ canvas{
 			overflow: hidden;
 			width: 0px;
 			opacity: 0;
-			transition: opacity 0.2s 0.1s;
+			transition: opacity 0.2s;
 		}
 	}
 }
