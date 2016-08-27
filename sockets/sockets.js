@@ -3,7 +3,7 @@ module.exports = function(io) {
     var User = require('../db/user.js');
 
     // nicht eingeloggt:
-    io.sockets.on('connection', function(socket){
+    io.on('connection', function(socket){
 
         socket.on('register', function(data){
             console.log('register try');

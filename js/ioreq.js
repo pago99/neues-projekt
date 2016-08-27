@@ -2,7 +2,7 @@ var run = 0;
 var authenticated;
 var username;
 
-var socket = io.connect('http://192.168.0.15:3000');
+var socket = io.connect('http://localhost:3000');
 socket.on('connect', function(){
 
     // HEAR SERVER-EVENTS
@@ -73,10 +73,16 @@ socket.on('connect', function(){
         }
     });
 
+    // in eine Funktion packen, damit DRY
     // fire button clicked:
     $('#starttimer').on('click touch', function(){
         if(!authenticated){
             $("#overlay").css("display", "block").animate({opacity: '1'}, "fast");
+        } else {
+            console.log('TEST');
+            // Hier landet die Routine, wenn der User sich authentifiziert hat
+            // und die Zeit startet und somit King of the Hill ist
+            // Evtl. ein Event rausballern, vllt auch als broadcast?
         }
     });
 
