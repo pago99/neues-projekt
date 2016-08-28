@@ -52,6 +52,8 @@ socket.on('connect', function(){
     });
 
     socket.on('highscore', function(user) {
+        // Zeit starten, wie lange der Browser hierfür brauch:
+        console.time('highscore');
         var times = new Array;
 
         for (var i = 0; i < user.user.length; i++) {
@@ -60,13 +62,56 @@ socket.on('connect', function(){
 
         var newtimes = times.sort(function(a, b){return b-a});
 
-        // da highscore nun auch aktualisiert wird, muss es vor jedem ausgelösten
-        // Schleifendurchlauf geleert werden
-        $('#highscore').html('');
+        // highscore-Container wird nicht mehr geleert. Neue werden appended, bereits
+        // vorhandene werden herausgefiltert und ändern ihre Position per Animation
         for (var i = 0; i < user.user.length; i++) {
-            var bottom = ((user.user[i].time*100)/newtimes[0])-3.5;
-            $('#highscore').append('<div class="user" style="bottom:'+bottom+'%;"><div class="rankuser">'+user.user[i].username+': '+user.user[i].time+'s</div><div class="dot"></div><hr/></div>');
+            // User und dessen Zeit für den aktuellen Schleifendurchlauf
+            var username = user.user[i].username;
+            var time = user.user[i].time;
+            // bottom Prozentwert auf zwei Nachkommstallen kürzen
+            var bottom = (time*100/newtimes[0]-3.5).toFixed(2);
+            // diese Variable enthält entweder 'undefined' oder einen username
+            // Indikator dafür, ob neuer Dot hinzugefügt oder vorhandener animiert werden soll!
+            var userHasScore = $(document).find('[data-username="'+username+'"]').attr('data-username');
+
+            //console.log(userHasScore, username, time, bottom);
+            // Frontend-Username mit Backend-Username vergleichen
+            if( userHasScore != username ) {
+                // User ist noch nicht im highscore => Hinzufügen
+                // console.log('score appended!');
+
+                // Elemente per JS erzeugen und mit Attributen versehen
+                // an dieser Stelle "data-username" einer "id" für username-holder vorgezogen
+                // weil es sein kann, dass irgendein User mal einen Namen wählt, der einer unserer
+                // css-ids entspricht, was das Layout zerstören könnte
+                var userContainer = $('<div/>', {'data-username':username, class:'user', css:{'bottom':bottom+'%'}});
+                var rankUser = $('<div/>', {class:'rankuser'});
+                var displayUsername = $('<span/>', {text:username+' '});
+                var displayScore = $('<span/>', {id:'timescore', text:time+'s'});
+                var dot = $('<div/>', {class:'dot'});
+                var hr = $('<hr/>');
+
+                // Nun nach gewünschter Verschachtelung dem DOM hinzufügen
+                $('#highscore').append(userContainer.append(rankUser.append(displayUsername.append(displayScore)), dot, hr));
+
+                // Entspricht diesem Aufbau:
+                //$('#highscore').append('<div data-username="'+username+'" class="user" style="bottom:'+bottom+'%;"><div class="rankuser"><span>'+username+': <span id="timescore">'+time+'s</span></span></div><div class="dot"></div><hr/></div>');
+            } else {
+                // User ist bereits im highscore => Animieren
+                //console.log('score animated!');
+                // in userHasScore ist der username des Users, der in diesem Schleifendurchlauf dran ist
+                // und bereits im Frontend in der Rangliste vorhanden ist
+                var actualUser = $('[data-username="'+userHasScore+'"]');
+                // Zeit aktualisieren und Position prozentual animieren
+                actualUser.find('#timescore').text(time);
+                actualUser.animate({
+                    'bottom': bottom+'%'
+                }, 1200); // Standart-Animation (kein Wert) innerhalb 1,2 Sekunden
+            }
+
         };
+        // Zeit stoppen und in Console ausgeben
+        console.timeEnd('highscore');
     });
 
     // Server sagt "stoppen", wenn es einen neuen King gibt
@@ -107,7 +152,13 @@ socket.on('connect', function(){
             e.preventDefault();
             var reqUsername = $(this).find('input[name="logname"]').val();
             var reqPassword = $(this).find('input[name="logpass"]').val();
-            socket.emit('authentication', {username: reqUsername, password: reqPassword});
+            if( reqUsername.length <= 1 || reqUsername.match(/^[a-z0-9]+$/i) ){
+                displayError(3, 'log');
+            } else if( reqPassword <= 3 ){
+                displayError('Wrong password', 'log');
+            } else {
+                socket.emit('authentication', {username: reqUsername, password: reqPassword});
+            }
         });
 
         // register button clicked:
@@ -116,7 +167,13 @@ socket.on('connect', function(){
             e.preventDefault();
             var reqUsername = $(this).find('input[name="regname"]').val();
             var reqPassword = $(this).find('input[name="regpass"]').val();
-            socket.emit('register', {username: reqUsername, password: reqPassword});
+            if( reqUsername.length <= 1 || reqUsername.match(/^[a-z0-9]+$/i) ){
+                displayError(3, 'reg');
+            } else if( reqPassword <= 3 ){
+                displayError('Wrong password', 'reg');
+            } else {
+                socket.emit('register', {username: reqUsername, password: reqPassword});
+            }
         });
 
         // fire button clicked:
@@ -132,9 +189,21 @@ socket.on('connect', function(){
         console.log("There was an error with the authentication:", err.message);
     });
 
-    // andere Fehler abfangen:
+    // Login-Fehler abfangen:
     socket.on('error', function(err){
-        console.log("There was an error ", err);
+        console.error("There was an error ", err);
+        display(err, 'log');
+    });
+
+    // Register-Fehler abfangen:
+    socket.on('regError', function(err){
+        // console.error("There was an error ", err);
+        displayError(err.code, 'reg');
+    });
+
+    // Erfolg abfangen
+    socket.on('success', function(msg){
+        console.info("Successful! ", msg);
     });
 
 });
@@ -153,4 +222,38 @@ function currentUser(username, time){
 function formatSavedTime(timeToFormat){
     var secAndMillisec = timeToFormat.split('.');
     return [parseInt(secAndMillisec[0]), parseInt(secAndMillisec[1])];
+}
+//
+function displayError(errorType, hook){
+    console.log('displayError called');
+    var msg;
+    switch(errorType){
+        case 1:
+            // User already exists
+            msg = 'This user already exists. Try another name!';
+        break;
+        case 2:
+            // Konnte nicht in DB speichern
+            msg = 'Apparently we couldn\'t save your request. Sorry, please try again later.';
+        break;
+        case 3:
+            // ungültiger username
+            msg = 'Please use only alphanumerical letters and/or digits for your username. Use at least 2 characters for your name.';
+        break;
+        case 4:
+            // ungültiges password
+            msg = 'Please use a secure password. Length of password must be at least 4 characters.';
+        break;
+        case 'User not found':
+            // user existiert nicht
+            msg = 'This user doesn\'t exits';
+        break;
+        case 'Wrong password':
+            // wrong password
+            msg = 'Wrong password.';
+        break;
+    }
+    $('.error').remove();
+    var msgHolder = $('<p/>', {class:'error', text:msg});
+    msgHolder.insertBefore($('[name="'+hook+'name"]'));
 }

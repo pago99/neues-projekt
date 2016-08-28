@@ -29,14 +29,16 @@ module.exports = function(io) {
                     // anschließend speichern
                     userSave.save( function(err) {
                         if(!err){
-                            console.info('User angelegt');
+                            console.info('Success: User angelegt');
                         } else {
-                            console.error('Fehler: Registrierung');
+                            console.error('Error: Konnte nicht speichern.');
+                            socket.emit('regError', {code:2});
                         }
                     });
                 } else {
                     // Ansonsten gibt es den User schon.
-                    console.error('user already exists');
+                    console.error('Error: user already exists');
+                    socket.emit('regError', {code:1});
                 }
             });
 
@@ -51,11 +53,16 @@ module.exports = function(io) {
         });
 
         socket.on('sendtime', function (userData) {
+            console.time('saveAndRankingsUpdate');
             // Hier die Daten speichern vom User, dessen Zeit gerade
             // gestoppt wurde, weil ein anderer FIRE! geklickt hat
             console.log('Gespeichert: ' + userData.username + ': ' + userData.time);
-            User.where('username', userData.username).update({$set: {time: userData.time}}, function(err, count){});
-            setRankings(User, socket, true);
+            User.where('username', userData.username).update({$set: {time: userData.time}}, function(err, count){
+                if(!err){
+                    setRankings(User, socket, true);
+                }
+            });
+            console.timeEnd('saveAndRankingsUpdate');
         });
 
         // bei Login Ranglistendaten holen!

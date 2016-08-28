@@ -220,6 +220,10 @@ canvas{
 		transition: all 0.2s;
 		overflow: hidden;
 
+		.error{
+			color: $fontcolor;
+		}
+
 		.exit {
 			left: 30px;
 			right: 0;
