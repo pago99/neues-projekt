@@ -220,8 +220,38 @@ canvas{
 		transition: all 0.2s;
 		overflow: hidden;
 
-		.error{
+		.error-tooltip{
 			color: $fontcolor;
+			position: absolute;
+    		z-index: 999;
+			top: 16px;
+    		left: 50%;
+			margin-left: -150px;
+    		background-color: #000;
+    		padding: 10px;
+    		border: 2px solid #fff;
+    		width: 300px;
+			font-size: 16px;
+		}
+		hr.tooltip-helper{
+			-ms-transform: rotate(90deg); /* IE 9 */
+			-webkit-transform: rotate(90deg); /* Safari */
+			transform: rotate(90deg);
+			position: absolute;
+    		bottom: -32px;
+    		right: -16px;
+    		width: 30px;
+    		border: 1px solid white;
+		}
+		.error-dot{
+			background: #fff;
+			border-radius: 50%;
+			height: 15px;
+			width: 15px;
+			border: 0;
+			position: absolute;
+			right: -8px;
+			bottom: -40px;
 		}
 
 		.exit {

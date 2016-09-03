@@ -223,7 +223,7 @@ function formatSavedTime(timeToFormat){
     var secAndMillisec = timeToFormat.split('.');
     return [parseInt(secAndMillisec[0]), parseInt(secAndMillisec[1])];
 }
-//
+//displays Errors
 function displayError(errorType, hook){
     console.log('displayError called');
     var msg;
@@ -254,6 +254,9 @@ function displayError(errorType, hook){
         break;
     }
     $('.error').remove();
-    var msgHolder = $('<p/>', {class:'error', text:msg});
-    msgHolder.insertBefore($('[name="'+hook+'name"]'));
+    var tooltip = $('<p/>', {class:'error-tooltip', text:msg});
+    var hr = $('<hr/>', {class:'tooltip-helper'});
+    var dot = $('<div/>', {class:'error-dot'});
+    $('[name="'+hook+'name"]').parent().append(tooltip.append(hr, dot));
+
 }
