@@ -2,7 +2,7 @@ var run = 0;
 var authenticated;
 var username, myTime;
 
-var socket = io.connect('http://localhost:3000');
+var socket = io.connect('http://46.101.242.251:3000');
 socket.on('connect', function(){
 
     // CLIENTSEITIG :)
@@ -228,6 +228,7 @@ function formatSavedTime(timeToFormat){
 function displayError(errorType, hook){
     console.log('displayError called');
     var msg;
+    var name = 'name';
     switch(errorType){
         case 1:
             // User already exists
@@ -244,6 +245,7 @@ function displayError(errorType, hook){
         case 4:
             // ungültiges password
             msg = 'Please use a secure password. Length of password must be at least 4 characters.';
+            name = 'pass';
         break;
         case 'User not found':
             // user existiert nicht
@@ -252,14 +254,24 @@ function displayError(errorType, hook){
         case 'Wrong password':
             // wrong password
             msg = 'Wrong password.';
+            name = 'pass';
         break;
     }
+    // Vorige Fehlermeldungen entfernen, falls gerade sichtbar
     $('.error').remove();
+    // Tooltip erstellen
     var tooltip = $('<p/>', {class:'error-tooltip', text:msg});
     var hr = $('<hr/>', {class:'tooltip-helper'});
     var dot = $('<div/>', {class:'error-dot'});
     var close = $('<span/>', {class:'error-close', text:'x'});
-    $('[name="'+hook+'name"]').parent().append(tooltip.append(hr, dot, close));
+    // Tooltip an richtiger Stelle anzeigen (direkt beim zur msg passenden Input)
+    $('[name="'+hook+name+'"]').parent().append(tooltip.append(hr, dot, close));
+    // Höhe des Tooltips ermitteln, damit richtiger Abstand gesetzt werden kann
+    var tooltipHeight = $('.error-tooltip').outerHeight();
+    // jetzt sichtbar schalten. Durch "visibility" kann Höhe errechnet werden
+    // selbst wenn Element noch unsichtbar
+    $('.error-tooltip').css({'top':'-'+tooltipHeight+'px', 'visibility':'visible'});
+    // Close-Event hinzufügen
     $(document).on('click touch focus', '.error-close, input', function(){
         $('.error-tooltip').remove();
     });
