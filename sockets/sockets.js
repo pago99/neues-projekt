@@ -22,7 +22,7 @@ module.exports = function(io) {
                     {
                       username: data.username,
                       password: data.password,
-                      time: '0',
+                      time: '0.0',
                       registered_at: new Date()
                     });
 
@@ -30,6 +30,7 @@ module.exports = function(io) {
                     userSave.save( function(err) {
                         if(!err){
                             console.info('Success: User angelegt');
+                            socket.emit('success', {username:data.username, password:data.password});
                         } else {
                             console.error('Error: Konnte nicht speichern.');
                             socket.emit('regError', {code:2});

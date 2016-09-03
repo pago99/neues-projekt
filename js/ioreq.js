@@ -152,7 +152,7 @@ socket.on('connect', function(){
             e.preventDefault();
             var reqUsername = $(this).find('input[name="logname"]').val();
             var reqPassword = $(this).find('input[name="logpass"]').val();
-            if( reqUsername.length <= 1 || reqUsername.match(/^[a-z0-9]+$/i) ){
+            if( reqUsername.length <= 1 || !reqUsername.match(/^[a-z0-9]+$/i) ){
                 displayError(3, 'log');
             } else if( reqPassword <= 3 ){
                 displayError('Wrong password', 'log');
@@ -167,7 +167,7 @@ socket.on('connect', function(){
             e.preventDefault();
             var reqUsername = $(this).find('input[name="regname"]').val();
             var reqPassword = $(this).find('input[name="regpass"]').val();
-            if( reqUsername.length <= 1 || reqUsername.match(/^[a-z0-9]+$/i) ){
+            if( reqUsername.length <= 1 || !reqUsername.match(/^[a-z0-9]+$/i) ){
                 displayError(3, 'reg');
             } else if( reqPassword <= 3 ){
                 displayError('Wrong password', 'reg');
@@ -202,8 +202,9 @@ socket.on('connect', function(){
     });
 
     // Erfolg abfangen
-    socket.on('success', function(msg){
-        console.info("Successful! ", msg);
+    socket.on('success', function(userData){
+        console.info("Successful! ", userData);
+        socket.emit('authentication', {username:userData.username, password:userData.password});
     });
 
 });
@@ -258,5 +259,4 @@ function displayError(errorType, hook){
     var hr = $('<hr/>', {class:'tooltip-helper'});
     var dot = $('<div/>', {class:'error-dot'});
     $('[name="'+hook+'name"]').parent().append(tooltip.append(hr, dot));
-
 }
