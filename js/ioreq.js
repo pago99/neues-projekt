@@ -28,8 +28,8 @@ socket.on('connect', function(){
                 console.log("Yeah, you're the new king of time.");
                 // die Anzeige des Users, der gerade King of the Hill geworden ist
                 // aktualisieren
-                currentUser(username, '(You)');
                 run = 1;
+                currentUser(username, '(You)', true);
             });
         }
     });
@@ -120,9 +120,6 @@ socket.on('connect', function(){
         // vorigen King vom Thron stoßen, also dessen Timer stoppen
         stoptimer();
 
-        // neuen King anzeigen (in jedem CLIENT!!!)
-        currentUser(userData.username, userData.time);
-
         // timer des neuen Kings laufen lassen
         var savedTime = formatSavedTime(userData.time);
         seconds = savedTime[0];
@@ -140,6 +137,8 @@ socket.on('connect', function(){
             console.log('Save! ' + username + ': ' + myTime );
             socket.emit('sendtime', {username:username, time: myTime});
             run = 0;
+            // neuen King anzeigen (in jedem CLIENT!!!)
+            currentUser(userData.username, userData.time, false);
         }
     });
 
@@ -200,12 +199,13 @@ socket.on('connect', function(){
     // Wird ausgespuckt wenn es einen Fehler beim Loginprozess gab
     socket.on('unauthorized', function(err){
         console.log("There was an error with the authentication:", err.message);
+        displayError(err.message, 'log');
     });
 
     // Login-Fehler abfangen:
     socket.on('error', function(err){
         console.error("There was an error ", err);
-        display(err, 'log');
+        displayError(err.message, 'log');
     });
 
     // Register-Fehler abfangen:
@@ -228,9 +228,15 @@ function authClean(){
     $('#overlay').remove();
 }
 // Alter display for current user info
-function currentUser(username, time){
+function currentUser(username, time, king){
     $('.currentinfo span').text(username);
     $('#othertime').text(time);
+    document.title = username+' is king of time!';
+    if(king){
+        $('#starttimer').prop('disabled', 'disabled').addClass('disabled');
+    } else {
+        $('#starttimer').prop('disabled', '').removeClass('disabled');
+    }
 }
 // returns the saved Time: first return value: seconds, then milliseconds
 function formatSavedTime(timeToFormat){
@@ -262,7 +268,7 @@ function displayError(errorType, hook){
         break;
         case 'User not found':
             // user existiert nicht
-            msg = 'This user doesn\'t exits';
+            msg = 'This user doesn\'t exists';
         break;
         case 'Wrong password':
             // wrong password

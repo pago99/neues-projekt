@@ -1,6 +1,7 @@
 module.exports = function(io) {
     var db   = require('../db/connect.js');
     var User = require('../db/user.js');
+    var bcrypt = require('bcryptjs');
 
     // SERVERSEITIG :)
 
@@ -16,12 +17,15 @@ module.exports = function(io) {
                 // es darf also kein Fehler aufgetreten sein und das "user"-Result
                 // muss leer (undefined) sein
                 if(!err && !user){
-
+                    // generate salt
+                    var salt = bcrypt.genSaltSync(10);
+                    // hash pw
+                    var hash = bcrypt.hashSync(data.password, salt);
                     // nur dann neuen Datensatz anlegen
                     var userSave = new User(
                     {
                       username: data.username,
-                      password: data.password,
+                      hash: hash,
                       time: '0.0',
                       registered_at: new Date()
                     });
@@ -114,7 +118,9 @@ module.exports = function(io) {
                 console.info('user found, check password...');
 
                 // User gefunden, aber stimmt das pw?
-                if( user.password == password ){
+                //if( user.hash == password ){
+                console.log('found hash: '+user.hash);
+                if( bcrypt.compareSync(password, user.hash) ){
                     console.info('Password correct');
                     socket.emit('whoami', {username:user.username, time: user.time});
                     // Wichtig: Sowohl im Erfolgs- als auch Misserfolgsfall
@@ -122,7 +128,7 @@ module.exports = function(io) {
                     // Ansonsten checkt der Client nicht, ob "authorized" oder "unauthorized"
                     // für den verbundenen User der Fall ist. Des Weiteren gehen NUR
                     // im "authorized" (Erfolg) - Fall broadcast-Messages!
-                    return callback(null, user.password == password);
+                    return callback(null, true);
                 } else {
                     return callback(new Error("Wrong password"));
                 }

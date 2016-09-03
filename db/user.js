@@ -7,6 +7,8 @@ var ObjectId = Schema.ObjectId;
 var UserSchema = new Schema({
     user_id        : ObjectId,
     username       : String,
+    salt           : String,
+    hash           : String,
     password       : String,
     time           : String,
     registered_at  : { type: Date, default: Date.now() }
