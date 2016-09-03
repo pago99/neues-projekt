@@ -74,5 +74,3 @@ $(document).ready(function() {
         $(".exit").animate({left: '30px'}, "fast");
     });
 });
-
-/* --- Rangliste ----*/

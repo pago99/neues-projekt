@@ -180,6 +180,19 @@ socket.on('connect', function(){
         // event wird nur getriggered, wenn man NICHT eingeloggt ist
         $('#starttimer').on('click touch', function(){
             $("#overlay").css("display", "block").animate({opacity: '1'}, "fast");
+            switch(myTime.length) {
+                case 7:
+                    $('#time').css('font-size', '100px');
+                    break;
+                case 8:
+                    $('#time').css('font-size', '80px');
+                    break;
+                case 9:
+                    $('#time').css('font-size', '60px');
+                    break;
+                default:
+                    $('#time').css('font-size', '120px');
+            };
         });
     }
 
