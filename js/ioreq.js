@@ -258,5 +258,9 @@ function displayError(errorType, hook){
     var tooltip = $('<p/>', {class:'error-tooltip', text:msg});
     var hr = $('<hr/>', {class:'tooltip-helper'});
     var dot = $('<div/>', {class:'error-dot'});
-    $('[name="'+hook+'name"]').parent().append(tooltip.append(hr, dot));
+    var close = $('<span/>', {class:'error-close', text:'x'});
+    $('[name="'+hook+'name"]').parent().append(tooltip.append(hr, dot, close));
+    $(document).on('click touch focus', '.error-close, input', function(){
+        $('.error-tooltip').remove();
+    });
 }

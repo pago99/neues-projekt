@@ -224,21 +224,21 @@ canvas{
 			color: $fontcolor;
 			position: absolute;
     		z-index: 999;
-			top: 16px;
+			top: 8px;
     		left: 50%;
 			margin-left: -150px;
     		background-color: #000;
-    		padding: 10px;
+    		padding: 16px;
     		border: 2px solid #fff;
     		width: 300px;
-			font-size: 16px;
+			font-size: 14px;
 		}
 		hr.tooltip-helper{
 			-ms-transform: rotate(90deg); /* IE 9 */
 			-webkit-transform: rotate(90deg); /* Safari */
 			transform: rotate(90deg);
 			position: absolute;
-    		bottom: -32px;
+    		bottom: -24px;
     		right: -16px;
     		width: 30px;
     		border: 1px solid white;
@@ -251,9 +251,18 @@ canvas{
 			border: 0;
 			position: absolute;
 			right: -8px;
-			bottom: -40px;
+			bottom: -32px;
 		}
-
+		.error-close{
+			color: $fontcolor;
+			position: absolute;
+			top: 2px;
+			right: 8px;
+			&:hover{
+				cursor: pointer;
+				font-weight: bold;
+			}
+		}
 		.exit {
 			left: 30px;
 			right: 0;
