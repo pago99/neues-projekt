@@ -2,7 +2,7 @@ var run = 0;
 var authenticated;
 var username, myTime;
 
-var socket = io.connect('http://46.101.242.251:3000');
+var socket = io.connect('http://localhost:3000');
 socket.on('connect', function(){
 
     // CLIENTSEITIG :)
