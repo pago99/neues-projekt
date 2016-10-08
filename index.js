@@ -2,8 +2,8 @@
 // Wichtig: Konfigurationsablauf, Reihenfolge wichtig!
 var express = require('express');
 var app     = express();
-var PORT    = process.env.PORT || 3000;
-var HOST    = process.env.HOST || 'localhost';
+var PORT    = process.env.PORT || 80;
+var HOST    = process.env.HOST || '46.101.217.175';
 var server  = app.listen(PORT, null, null, function() {
 
   console.log('Host: %s - Server listening on port %d in %s mode', 'localhost', this.address().port, app.settings.env);
