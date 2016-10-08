@@ -69,7 +69,7 @@ socket.on('connect', function(){
             var username = user.user[i].username;
             var time = user.user[i].time;
             // bottom Prozentwert auf zwei Nachkommstallen kürzen
-            var bottom = (time*100/newtimes[0]-3.5).toFixed(2);
+            var bottom = (time*100/newtimes[0]*0.965).toFixed(2);
             // diese Variable enthält entweder 'undefined' oder einen username
             // Indikator dafür, ob neuer Dot hinzugefügt oder vorhandener animiert werden soll!
             var userHasScore = $(document).find('[data-username="'+username+'"]').attr('data-username');
