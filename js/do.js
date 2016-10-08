@@ -76,5 +76,6 @@ $(document).ready(function() {
 
     $(".impbutton").on('click touch', function(){
         $(".impdata").toggle();
+        $("#impress").css("width", "100%");
     });
 });

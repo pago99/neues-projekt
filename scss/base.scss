@@ -382,11 +382,10 @@ canvas{
 	}
 
 	.impdata {
-		display: none;
-		max-width: 1200px;
+		max-width: 800px;
 		color: $fontcolor;
-		display: block;
 		position: relative;
 		margin: 20px auto;
+		display: none;
 	}
 }
