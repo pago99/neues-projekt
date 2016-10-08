@@ -388,5 +388,7 @@ canvas{
 		position: relative;
 		margin: 20px auto;
 		display: none;
+		max-height: 300px;
+		overflow: scroll;
 	}
 }
