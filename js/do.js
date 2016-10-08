@@ -73,4 +73,8 @@ $(document).ready(function() {
     $(".loginlink").on('click touch', function(){
         $(".exit").animate({left: '30px'}, "fast");
     });
+
+    $(".impbutton").on('click touch', function(){
+        $(".impdata").toggle();
+    });
 });

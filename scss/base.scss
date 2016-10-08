@@ -368,3 +368,24 @@ canvas{
 		}
 	}
 }
+
+#impress {
+	position: absolute;
+	left: 0px;
+	bottom: 0px;
+	padding: 10px;
+
+	i {
+		font-size: 22px;
+		color: $fontcolor;
+	}
+
+	.impdata {
+		display: none;
+		max-width: 1200px;
+		color: $fontcolor;
+		display: block;
+		position: relative;
+		margin: 20px auto;
+	}
+}
