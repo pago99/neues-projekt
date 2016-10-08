@@ -374,18 +374,19 @@ canvas{
 	left: 0px;
 	bottom: 0px;
 	padding: 10px;
+	background: rgba(0,0,0,0.8);
 
 	i {
 		font-size: 22px;
 		color: $fontcolor;
+		cursor: pointer;
 	}
 
 	.impdata {
-		display: none;
-		max-width: 1200px;
+		max-width: 800px;
 		color: $fontcolor;
-		display: block;
 		position: relative;
 		margin: 20px auto;
+		display: none;
 	}
 }
